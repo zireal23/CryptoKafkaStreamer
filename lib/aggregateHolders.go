@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"log"
 )
+
 /**
 * For every coin I am storing the prices of every 10 second interval for a 24 hour period.
 * So there will be 8640 records for every coin.
@@ -14,7 +15,6 @@ import (
 * geomteric and harmonic means.
 **/
 
-
 /**
 * The cryptoPricesArray is a FIFO structure that supports pushing elements to the end of the list
 * as well as removing the first element of the list that is also the oldest.
@@ -23,11 +23,13 @@ import (
 
 type RollingMeans struct {
 	CryptoPricesArray *list.List
-	ArithmeticMean float32
-	GeomtericMean float32
-	HarmonicMean float32
+	LinearSumOfAllPrices float64
+	LoagarithmicSumOfAllPrices float64
+	ReciprocatedSumOfAllPrices float64
     NumberOfElements int32;
 }
+//Maximum number of prices to be held in the array for a sepcific currency
+//The time window is 1 day and hence the number of 10 second intervals in a day is 8640
 var LimitOfArrayElements int32 = 8640;
 
 
@@ -38,7 +40,7 @@ var LimitOfArrayElements int32 = 8640;
 		But for modifying the values, we cant modify the copy since the origin value is unmutated
 		Whats best would be to have a map of struct pointers, that way we access the struct stored directly
 	**/
-var CryptoAggregatePrices map[string]*RollingMeans;
+var CryptoAggregatePricesHolder map[string]*RollingMeans;
 
 
 
@@ -53,7 +55,7 @@ var CryptoAggregatePrices map[string]*RollingMeans;
 **/
 
 func InitMap(){
-	CryptoAggregatePrices = make(map[string]*RollingMeans);
+	CryptoAggregatePricesHolder = make(map[string]*RollingMeans);
 }
 
 
@@ -66,15 +68,15 @@ func InitMap(){
 **/
 
 func CheckAndInitCurrencyMap(cryptoSymbol string) {
-	if _, isPresent := CryptoAggregatePrices[cryptoSymbol]; !isPresent{
+	if _, isPresent := CryptoAggregatePricesHolder[cryptoSymbol]; !isPresent{
 		currencyAggregates := &RollingMeans{
 			CryptoPricesArray: list.New(),
-			ArithmeticMean: 0,
-			GeomtericMean: 0,
-			HarmonicMean: 0,
+			LinearSumOfAllPrices: 0,
+			LoagarithmicSumOfAllPrices: 0,
+			ReciprocatedSumOfAllPrices: 0,
 			NumberOfElements: 0,
 		}
-		CryptoAggregatePrices[cryptoSymbol] = currencyAggregates;
+		CryptoAggregatePricesHolder[cryptoSymbol] = currencyAggregates;
 }
 }
 
@@ -94,17 +96,17 @@ func CheckAndInitCurrencyMap(cryptoSymbol string) {
 func UpdateCryptoStructs(cryptoSymbol string, currentPrice float32){
 	CheckAndInitCurrencyMap(cryptoSymbol);
 
-	if(CryptoAggregatePrices[cryptoSymbol].NumberOfElements+1<=LimitOfArrayElements){
-		CryptoAggregatePrices[cryptoSymbol].NumberOfElements++;
+	if(CryptoAggregatePricesHolder[cryptoSymbol].NumberOfElements+1<=LimitOfArrayElements){
+		CryptoAggregatePricesHolder[cryptoSymbol].NumberOfElements++;
 	}else{
 		/*
 		* We are removing the oldest value
 		* We hold the original array in a variable, remove the last element and assign it again to the struct
 		*/
 		log.Println("Reslicing the prices holder");
-		oldestCurrencyPrice := CryptoAggregatePrices[cryptoSymbol].CryptoPricesArray.Front();
-		CryptoAggregatePrices[cryptoSymbol].CryptoPricesArray.Remove(oldestCurrencyPrice);
+		oldestCurrencyPrice := CryptoAggregatePricesHolder[cryptoSymbol].CryptoPricesArray.Front();
+		CryptoAggregatePricesHolder[cryptoSymbol].CryptoPricesArray.Remove(oldestCurrencyPrice);
 	}
-	CryptoAggregatePrices[cryptoSymbol].CryptoPricesArray.PushBack(float32(currentPrice));
+	CryptoAggregatePricesHolder[cryptoSymbol].CryptoPricesArray.PushBack(float32(currentPrice));
 
 }
