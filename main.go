@@ -139,6 +139,8 @@ func unmarshalDataAndWriteToDB(coinMessage []byte, dbResources util.DBResources)
         //Converting the unix timestamp to a time.Time object
         Timestamp: time.Unix(coinDataResponse.GetTimestamp(),0),
         ArithmeticAggregatePrice: lib.CalulateCurrentArithmeticMean(coinDataResponse.GetPrice(),coinDataResponse.GetId()),
+        GeometricAggregatePrice: lib.CalculateCurrentGeometricMean(coinDataResponse.GetPrice(),coinDataResponse.GetId()),
+        HarmonicAggregatePrice: lib.CalculateCurrentHarmonicMean(coinDataResponse.GetPrice(),coinDataResponse.GetId()),
     }
     util.InsertCoinPricesToDB(dbResources,coinDataforDB);
 }

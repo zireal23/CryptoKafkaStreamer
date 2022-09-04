@@ -121,10 +121,13 @@ func InsertCoinPricesToDB(dbResources DBResources,coinData CoinPriceData){
 		{Key: "ID", Value: coinData.ID},
 		{Key: "Name", Value: transformStringForDatabase(coinData.Name)},
 		{Key: "RealPrice", Value: coinData.RealPrice},
-		//TODO: Add GeometricAggregatePrice and HarmonicAggregatePrice later
-		{Key: "ArithmeticAggregatePrice", Value: coinData.ArithmeticAggregatePrice},
 		//Converting the time.Time object to a primitive.DateTime object because thats the timestamp that is identified as a valid timestamp for the BSON format
 		{Key: "timestamp", Value: primitive.NewDateTimeFromTime(coinData.Timestamp)},
+		//TODO: Add GeometricAggregatePrice and HarmonicAggregatePrice later
+		{Key: "ArithmeticAggregatePrice", Value: coinData.ArithmeticAggregatePrice},
+		{Key: "GeometricAggregatePrice", Value: coinData.GeometricAggregatePrice},
+		{Key: "HarmonicAggregatePrice", Value: coinData.HarmonicAggregatePrice},
+		
 	}
 	//filter := bson.M{"ID": coinData.GetId()};
 
