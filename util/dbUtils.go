@@ -77,12 +77,6 @@ func OpenDatabaseConnection() (DBResources, error) {
 
 	}
 
-	// //creating a sample document 
-	// btcPrice := bson.D{{Key: "Name", Value: "BTC"}, {Key: "Price", Value: "1"}};
-
-	// //Inserting into DB
-	// result, err := cryptoPrices.InsertOne(context.TODO(),btcPrice);
-
 	return dbResources, nil;
 }
 
