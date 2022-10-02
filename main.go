@@ -20,7 +20,7 @@ import (
 
 var (
     topic = []string{
-        "cryptoPrices",
+        os.Getenv("TOPIC"),
     }
     MIN_COMMIT_COUNT = 100;
 )
@@ -64,11 +64,11 @@ func main() {
 func initConsumer() *kafka.Consumer {
     //ConfigMap is a map containing standard librdkafka configuration properties as documented in: https://github.com/edenhill/librdkafka/tree/master/CONFIGURATION.md
     configMap := kafka.ConfigMap{
-        "bootstrap.servers": "pkc-41p56.asia-south1.gcp.confluent.cloud:9092",
+        "bootstrap.servers": os.Getenv("BOOSTRAP_SERVERS"),
         "sasl.mechanisms": "PLAIN",
         "security.protocol": "SASL_SSL",
-        "sasl.username":"2QWGO7JGYQJ5ZMGZ",
-        "sasl.password": "JNt+0blpAMoWFSf5sbkgdAzvE2ty+8uVmBK22WJBqPJJtA2dMdR5bpcItZpAzRHd",
+        "sasl.username":os.Getenv("SASL_USERNAME"),
+        "sasl.password": os.Getenv("SASL_PASSWORD"),
         "group.id":       "kafkaConsumer",
         "auto.offset.reset": "smallest",
         "enable.auto.commit": "false",

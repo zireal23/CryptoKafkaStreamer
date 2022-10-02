@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -40,7 +41,7 @@ type DBResources struct {
 */
 
 func OpenDatabaseConnection() (DBResources, error) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://cryptoDB:sayan@cluster0.dve8ojg.mongodb.net/?retryWrites=true&w=majority"));
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGODB_URI")));
 	if err != nil {
 		log.Printf("Couldnt create mongoDB client due to: %v", err);
 		return DBResources{}, err;
@@ -61,7 +62,7 @@ func OpenDatabaseConnection() (DBResources, error) {
 	err = initTimeSeriesCollection(client);
 
 	if err != nil {
-		log.Println("Couldnt create the time series collection");
+		log.Println("Couldnt create the time series collection", err.Error());
 	}
 	
 	selectedCollection := client.Database("cryptoDB").Collection("cryptoPricesTimeSeries");
