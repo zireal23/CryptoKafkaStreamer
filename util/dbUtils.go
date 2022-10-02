@@ -40,7 +40,7 @@ type DBResources struct {
 */
 
 func OpenDatabaseConnection() (DBResources, error) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://zirael:sayan@mongodb:27017/"));
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://cryptoDB:sayan@cluster0.dve8ojg.mongodb.net/?retryWrites=true&w=majority"));
 	if err != nil {
 		log.Printf("Couldnt create mongoDB client due to: %v", err);
 		return DBResources{}, err;
@@ -64,7 +64,7 @@ func OpenDatabaseConnection() (DBResources, error) {
 		log.Println("Couldnt create the time series collection");
 	}
 	
-	selectedCollection := client.Database("cryptoDataDB").Collection("cryptoPricesTimeSeries");
+	selectedCollection := client.Database("cryptoDB").Collection("cryptoPricesTimeSeries");
 
 	log.Println("Successfully connected to mongo and initialised a time series collection!");
 
@@ -84,7 +84,7 @@ func OpenDatabaseConnection() (DBResources, error) {
 
 func initTimeSeriesCollection(client *mongo.Client) error {
 	//creating the database if not present
-	cryptoDataDB := client.Database("cryptoDataDB");
+	cryptoDataDB := client.Database("cryptoDB");
 
 	// setting time series data options
 	timeSeriesOptions := options.TimeSeries().SetTimeField("timestamp").SetGranularity("seconds");

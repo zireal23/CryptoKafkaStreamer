@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
@@ -18,7 +20,7 @@ import (
 
 var (
     topic = []string{
-        "cryptoTopic",
+        "cryptoPrices",
     }
     MIN_COMMIT_COUNT = 100;
 )
@@ -33,7 +35,7 @@ var (
 */
 
 func main() {
-
+        fmt.Println("Hello");
      kafkaConsumer := initConsumer();
     log.Println("The kafka consumer was successfully initialised");
 
@@ -62,8 +64,12 @@ func main() {
 func initConsumer() *kafka.Consumer {
     //ConfigMap is a map containing standard librdkafka configuration properties as documented in: https://github.com/edenhill/librdkafka/tree/master/CONFIGURATION.md
     configMap := kafka.ConfigMap{
-        "bootstrap.servers": "kafka:9092",
-        "group.id":          "kafkaStreamer",
+        "bootstrap.servers": "pkc-41p56.asia-south1.gcp.confluent.cloud:9092",
+        "sasl.mechanisms": "PLAIN",
+        "security.protocol": "SASL_SSL",
+        "sasl.username":"2QWGO7JGYQJ5ZMGZ",
+        "sasl.password": "JNt+0blpAMoWFSf5sbkgdAzvE2ty+8uVmBK22WJBqPJJtA2dMdR5bpcItZpAzRHd",
+        "group.id":       "kafkaConsumer",
         "auto.offset.reset": "smallest",
         "enable.auto.commit": "false",
     }
@@ -90,7 +96,15 @@ func initConsumer() *kafka.Consumer {
 
 func consumeKafkaMessages(kafkaConsumer *kafka.Consumer, dbResources util.DBResources) {
     err := kafkaConsumer.SubscribeTopics(topic,nil);
-
+    	// Set up a channel for handling Ctrl-C, etc
+	sigchan := make(chan os.Signal);
+	signal.Notify(sigchan, os.Interrupt, syscall.SIGTERM);
+    go func(){
+        <-sigchan;
+        fmt.Println("Closing consumer");
+        kafkaConsumer.Close();
+        os.Exit(1);
+    }();
     if err != nil{
         log.Println("Couldnt subscribe to kafka topic", err.Error());
     }
