@@ -23,6 +23,7 @@ type CoinPriceData struct{
 	GeometricAggregatePrice float64
 	HarmonicAggregatePrice float64
 	Timestamp time.Time
+	PriceAt int64
 }
 
 type DBResources struct {
@@ -118,7 +119,7 @@ func InsertCoinPricesToDB(dbResources DBResources,coinData CoinPriceData){
 		{Key: "RealPrice", Value: coinData.RealPrice},
 		//Converting the time.Time object to a primitive.DateTime object because thats the timestamp that is identified as a valid timestamp for the BSON format
 		{Key: "timestamp", Value: primitive.NewDateTimeFromTime(coinData.Timestamp)},
-		//TODO: Add GeometricAggregatePrice and HarmonicAggregatePrice later
+		{Key: "PriceAt", Value: coinData.Timestamp.Unix()},
 		{Key: "ArithmeticAggregatePrice", Value: coinData.ArithmeticAggregatePrice},
 		{Key: "GeometricAggregatePrice", Value: coinData.GeometricAggregatePrice},
 		{Key: "HarmonicAggregatePrice", Value: coinData.HarmonicAggregatePrice},
