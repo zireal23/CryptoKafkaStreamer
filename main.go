@@ -111,7 +111,7 @@ func consumeKafkaMessages(kafkaConsumer *kafka.Consumer, dbResources util.DBReso
 
     numberOfMessagesRead := 0;
     run := true;
-
+    start := time.Now();
     for run {
         kafkaevent := kafkaConsumer.Poll(100);
         
@@ -120,6 +120,8 @@ func consumeKafkaMessages(kafkaConsumer *kafka.Consumer, dbResources util.DBReso
             numberOfMessagesRead += 1;
             if numberOfMessagesRead % 100 == 0{
                 kafkaConsumer.Commit();
+                fmt.Println("100 messages read in: ", time.Since(start));
+                start = time.Now();
             }
             log.Println(string(event.Key));
             
